@@ -18,30 +18,31 @@ def merge(l1, l2):
     ans.extend(l2[p2:])
     return (ans, comparisons)
 
-"""def mergesort(lst):
+def mergesort(lst):
     if len(lst)<=1:
-        return lst
+        return lst, 0
     mid = len(lst)//2
-    left = lst[:mid]
-    right = lst[mid:]
-    
-    return merge(mergesort(left), mergesort(right))"""
+    left, left_comps = mergesort(lst[:mid])
+    right, right_comps = mergesort(lst[mid:])
+    merged, merge_comps = merge(left, right)
+    return merged, left_comps + right_comps + merge_comps
 
-def insertionsort(lst):
-    comparisons = 0
-    for i in range(1, len(lst)):
-        j = i
-        while j > 0:
-            comparisons+=1
-            if lst[j]<lst[j-1]:
-                lst[j], lst[j-1] = lst[j-1], lst[j]
-                j-=1
-            else:
-                break
+def insertionsort(lst): 
+    comparisons = 0 
+    for i in range(1, len(lst)): 
+        key = lst[i] 
+        j = i - 1 
+        while j >= 0: 
+            comparisons += 1 
+            if lst[j] > key: 
+                lst[j + 1] = lst[j] 
+                j -= 1 
+            else: 
+                break 
+            lst[j + 1] = key 
     return (lst, comparisons)
 
-
-def integrate(lst, S=10):
+def integrate(lst, S):
     def hybrid(arr):
         n = len(arr)
         if n <= 1:
@@ -56,12 +57,14 @@ def integrate(lst, S=10):
 
     return hybrid(lst)
 
-#lst = [4, 3,21,143,14,234,4,12331231,423,25,522,34525,123]
-lst=[]
+lst = []
 for i in range(10000):
     lst.append(random.randint(0, 1000000))
+lst1 = lst.copy()
+
 sorted_ins, comps_ins = insertionsort(lst[:])
-sorted_hyb, comps_hyb = integrate(lst)
-print ((comps_ins, comps_hyb))
-#print((sorted_ins, comps_ins))
-#print((sorted_hyb, comps_hyb))
+sorted_mrg, comps_mrg = mergesort(lst1)
+S = 15
+sorted_hyb, comps_hyb = integrate(lst, S)
+print("Total Number of Key Comparisons")
+print ("Pure Insertion Sort: " + str(comps_ins) + "\nPure Merge Sort: " + str(comps_mrg) + "\nHybrid Algorithm with S="+str(S)+": " + str(comps_hyb))
