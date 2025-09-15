@@ -13,29 +13,41 @@ def merge(l1, l2):
     ans.extend(l2[p2:])
     return ans
 
-def mergesort(lst):
+"""def mergesort(lst):
     if len(lst)<=1:
         return lst
     mid = len(lst)//2
     left = lst[:mid]
     right = lst[mid:]
     
-    return merge(mergesort(left), mergesort(right))
+    return merge(mergesort(left), mergesort(right))"""
 
 def insertionsort(lst):
-    comparisons = 0
-    for i in range(1, len(lst)):
-        j = i
-        while j > 0:
-            comparisons+=1
-            if lst[j]<lst[j-1]:
-                lst[j], lst[j-1] = lst[j-1], lst[j]
-                j-=1
-    return (lst, comparisons)
+    a = list(lst)
+    for i in range(1, len(a)):
+        key = a[i]
+        j = i - 1
+        while j >= 0 and a[j] > key:
+            a[j + 1] = a[j]
+            j -= 1
+        a[j + 1] = key
+    return a
 
 
-def integrate(lst):
-    pass
+def integrate(lst, S=10):
+    def hybrid(arr):
+        n = len(arr)
+        if n <= 1:
+            return list(arr)
+        if n <= S:
+            return insertionsort(arr)
+        mid = n // 2
+        left = hybrid(arr[:mid])
+        right = hybrid(arr[mid:])
+        return merge(left, right)
 
-lst = [4, 3]
+    return hybrid(lst)
+
+lst = [4, 3,21,143,14,234,4,12331231,423,25,522,34525,123]
 print(insertionsort(lst))
+print(integrate(lst))
