@@ -18,6 +18,7 @@ def merge(l1, l2):
     ans.extend(l2[p2:])
     return (ans, comparisons)
 
+#Pure MergeSort
 def mergesort(lst):
     if len(lst)<=1:
         return lst, 0
@@ -27,6 +28,7 @@ def mergesort(lst):
     merged, merge_comps = merge(left, right)
     return merged, left_comps + right_comps + merge_comps
 
+#Pure InsertionSort
 def insertionsort(lst): 
     comparisons = 0 
     for i in range(1, len(lst)): 
@@ -101,11 +103,12 @@ datasets=generate_datasets(sizes,1000000000)
 
 #PART C.3:
 lst=datasets[100000] #sample list
-
+lst1 = datasets[100000].copy()
 # test pure insertion sort
 sorted_ins, comps_ins = insertionsort(lst[:])
 sorted_mrg, comps_mrg = mergesort(lst1)
 S = 15
 sorted_hyb, comps_hyb = integrate(lst, S)
 print("Total Number of Key Comparisons")
-print ("Pure Insertion Sort: " + str(comps_ins) + "\nPure Merge Sort: " + str(comps_mrg) + "\nHybrid Algorithm with S="+str(S)+": " + str(comps_hyb))
+print (f"Pure Insertion Sort: {comps_ins} \nPure Merge Sort: {comps_mrg} \nHybrid Algorithm with S={S}: {comps_hyb}")
+print(f"Difference in comparisons between Hybrid and Pure Merge Sort: {comps_hyb - comps_mrg}")
