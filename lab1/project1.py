@@ -1,7 +1,7 @@
 import random
 
 def merge(l1, l2):
-    print(l1, l2)
+    #print(l1, l2)
     ans = []
     p1 = 0
     p2 = 0
@@ -42,7 +42,9 @@ def insertionsort(lst):
             lst[j + 1] = key 
     return (lst, comparisons)
 
-def integrate(lst, S):
+#PART A: HYBRID SORT
+#function that integrates the insertion sort and the merge sort logics
+def integrate(lst, S=15):
     def hybrid(arr):
         n = len(arr)
         if n <= 1:
@@ -57,11 +59,50 @@ def integrate(lst, S):
 
     return hybrid(lst)
 
-lst = []
-for i in range(10000):
-    lst.append(random.randint(0, 1000000))
-lst1 = lst.copy()
+#PART B: GENERATION OF DATASETS
+#function to generate datasets
+def generate_datasets(sizes,x):
+    datasets={}
+    for n in sizes:
+        datasets[n]=[random.randint(0,x) for _ in range(n)]
+    return datasets
+sizes=[1000,5000,10000,50000,100000,500000,1000000,5000000,10000000]
+datasets=generate_datasets(sizes,1000000000)
 
+
+#PART C: TESTING THE SORTS AND MAKING GRAPHS
+
+#PART C.1:
+
+
+
+
+
+
+
+
+
+
+
+
+#PART C.2:
+
+
+
+
+
+
+
+
+
+
+
+
+
+#PART C.3:
+lst=datasets[100000] #sample list
+
+# test pure insertion sort
 sorted_ins, comps_ins = insertionsort(lst[:])
 sorted_mrg, comps_mrg = mergesort(lst1)
 S = 15
