@@ -73,7 +73,36 @@ sizes=[1000,5000,10000,50000,100000,500000,1000000,5000000,10000000]
 datasets=generate_datasets(sizes,1000000000)
 
 
+#PART C: TESTING THE SORTS AND MAKING GRAPHS
 
+#PART C.1:
+
+
+
+
+
+
+
+
+
+
+
+
+#PART C.2:
+
+
+
+
+
+
+
+
+
+
+
+
+
+#PART C.3:
 lst=datasets[100000] #sample list
 
 # test pure insertion sort
