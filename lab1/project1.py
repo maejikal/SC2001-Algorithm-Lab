@@ -1,7 +1,7 @@
 import random
 
 def merge(l1, l2):
-    print(l1, l2)
+    #print(l1, l2)
     ans = []
     p1 = 0
     p2 = 0
@@ -18,15 +18,20 @@ def merge(l1, l2):
     ans.extend(l2[p2:])
     return (ans, comparisons)
 
-"""def mergesort(lst):
+# pure merge sort function
+def mergesort(lst):
     if len(lst)<=1:
-        return lst
+        return (list(lst), 0)
     mid = len(lst)//2
     left = lst[:mid]
     right = lst[mid:]
     
-    return merge(mergesort(left), mergesort(right))"""
+    left_sorted, left_comp = mergesort(left)
+    right_sorted, right_comp = mergesort(right)
+    merged, merge_comp = merge(left_sorted, right_sorted)
+    return (merged, left_comp + right_comp + merge_comp)
 
+# pure insertion sort function
 def insertionsort(lst):
     comparisons = 0
     for i in range(1, len(lst)):
@@ -40,8 +45,9 @@ def insertionsort(lst):
                 break
     return (lst, comparisons)
 
-
-def integrate(lst, S=10):
+#PART A: HYBRID SORT
+#function that integrates the insertion sort and the merge sort logics
+def integrate(lst, S=15):
     def hybrid(arr):
         n = len(arr)
         if n <= 1:
@@ -56,12 +62,35 @@ def integrate(lst, S=10):
 
     return hybrid(lst)
 
-#lst = [4, 3,21,143,14,234,4,12331231,423,25,522,34525,123]
-lst=[]
-for i in range(10000):
-    lst.append(random.randint(0, 1000000))
+#PART B: GENERATION OF DATASETS
+#function to generate datasets
+def generate_datasets(sizes,x):
+    datasets={}
+    for n in sizes:
+        datasets[n]=[random.randint(0,x) for _ in range(n)]
+    return datasets
+sizes=[1000,5000,10000,50000,100000,500000,1000000,5000000,10000000]
+datasets=generate_datasets(sizes,1000000000)
+
+
+
+lst=datasets[100000] #sample list
+
+# test pure insertion sort
 sorted_ins, comps_ins = insertionsort(lst[:])
+
+
+# test pure merge sort
+sorted_merge, comps_merge = mergesort(lst[:])
+
+
+# test hybrid (integrated) sort
 sorted_hyb, comps_hyb = integrate(lst)
-print ((comps_ins, comps_hyb))
-#print((sorted_ins, comps_ins))
-#print((sorted_hyb, comps_hyb))
+
+
+# comparison summary
+print("\ncomparison summary:")
+print(f"insertion sort: {comps_ins} comparisons")
+print(f"merge sort: {comps_merge} comparisons")
+print(f"hybrid sort: {comps_hyb} comparisons")
+print(f"\nhybrid vs pure merge sort: {comps_hyb} vs {comps_merge} (difference: {comps_hyb - comps_merge})")
