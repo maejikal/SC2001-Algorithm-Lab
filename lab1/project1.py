@@ -23,7 +23,7 @@ def merge(l1, l2):
 #Pure MergeSort
 def mergesort(lst):
     if len(lst)<=1:
-        return lst, 0
+        return lst[:], 0
     mid = len(lst)//2
     left, left_comps = mergesort(lst[:mid])
     right, right_comps = mergesort(lst[mid:])
@@ -31,20 +31,21 @@ def mergesort(lst):
     return merged, left_comps + right_comps + merge_comps
 
 #Pure InsertionSort
-def insertionsort(lst): 
+def insertionsort(lst):
+    arr = lst[:] 
     comparisons = 0 
-    for i in range(1, len(lst)): 
-        key = lst[i] 
+    for i in range(1, len(arr)): 
+        key = arr[i] 
         j = i - 1 
         while j >= 0: 
             comparisons += 1 
-            if lst[j] > key: 
-                lst[j + 1] = lst[j] 
+            if arr[j] > key: 
+                arr[j + 1] = arr[j] 
                 j -= 1 
             else: 
                 break 
-            lst[j + 1] = key 
-    return (lst, comparisons)
+            arr[j + 1] = key 
+    return (arr, comparisons)
 
 #PART A: HYBRID SORT
 #function that integrates the insertion sort and the merge sort logics
