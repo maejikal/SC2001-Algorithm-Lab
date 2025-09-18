@@ -1,5 +1,5 @@
 import random
-
+import math
 from alive_progress import alive_bar #progress bar for loops
 
 def merge(l1, l2):
@@ -120,13 +120,24 @@ with alive_bar(len(s), title="Comparison counting in progress...") as bar:
         comps_hyb_dict[i] = avg_comps/len(datasets_c_2) #average comparisons for each S value
         bar()
 
-# plotting the graphs
+def theoretical_comparisons(n, S): #approx number of comparisons for hybrid
+    if S >= n:
+        # if S >= n, it's just insertion sort on the whole array
+        return  (n * (n-1) / 4)
+    return n * math.log2(n / S) + (n * (S-1) / 4)
+# n and s were definied earlier, n = 10000, s = [x for x in range(1,101)]
+theoretical_results = {S: theoretical_comparisons(n, S) for S in s}
+
 import matplotlib.pyplot as plt
-plt.plot(list(comps_hyb_dict.keys()), list(comps_hyb_dict.values()))
+# plotting empirical vs theoretical results
+plt.plot(list(comps_hyb_dict.keys()), list(comps_hyb_dict.values()), label="Empirical")
+plt.plot(list(theoretical_results.keys()), list(theoretical_results.values()), label="Theoretical", linestyle="--")
+
 plt.xlabel("S values")
-plt.ylabel("Average number of comparisons")
-plt.title(f"Average number of comparisons vs S values (n={n})")
-plt.grid()
+plt.ylabel("Number of comparisons")
+plt.title(f"Empirical vs Theoretical Comparisons (n={n})")
+plt.legend()
+plt.grid(True)
 plt.show()
 
 #PART C.3:
