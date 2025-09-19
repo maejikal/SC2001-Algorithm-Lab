@@ -118,13 +118,13 @@ with alive_bar(len(n_values), title="Comparison counting for fixed S...") as bar
         comps_n_dict[n] = avg_comps / trials
         bar()
 
-# theoretical comparisons function 
-def theoretical_comparisons_fixedS(n, S):
+def theoretical_comparisons(n, S): #approx number of comparisons for hybrid
     if S >= n:
-        return (n * (n-1) / 4)
+        # if S >= n, it's just insertion sort on the whole array
+        return  (n * (n-1) / 4)
     return n * math.log2(n / S) + (n * (S-1) / 4)
 
-theoretical_results_n = {n: theoretical_comparisons_fixedS(n, S_fixed) for n in n_values}
+theoretical_results_n = {n: theoretical_comparisons(n, S_fixed) for n in n_values}
 
 # plotting empirical vs theoretical results
 plt.plot(list(comps_n_dict.keys()), list(comps_n_dict.values()), label="Empirical", marker="o")
@@ -138,17 +138,6 @@ plt.title(f"Empirical vs Theoretical Comparisons (S={S_fixed})")
 plt.legend()
 plt.grid(True)
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
 
 #PART C.2:
 
@@ -173,11 +162,7 @@ with alive_bar(len(s), title="Comparison counting in progress...") as bar:
         comps_hyb_dict[i] = avg_comps/len(datasets_c_2) #average comparisons for each S value
         bar()
 
-def theoretical_comparisons(n, S): #approx number of comparisons for hybrid
-    if S >= n:
-        # if S >= n, it's just insertion sort on the whole array
-        return  (n * (n-1) / 4)
-    return n * math.log2(n / S) + (n * (S-1) / 4)
+
 # n and s were definied earlier, n = 10000, s = [x for x in range(1,101)]
 theoretical_results = {S: theoretical_comparisons(n, S) for S in s}
 
