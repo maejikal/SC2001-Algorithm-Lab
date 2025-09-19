@@ -86,6 +86,59 @@ def generate_datasets_n(size,number_of_datasets,x):
 
 #PART C.1:
 
+"""With the value of S fixed, plot the number of key comparisons over
+different sizes of the input list n. Compare your empirical results with
+your theoretical analysis of the time complexity."""
+
+import numpy as np   # add here since not imported above
+import matplotlib.pyplot as plt  # already imported later
+
+# fixed threshold S
+S_fixed = 20
+
+# input sizes to test
+n_values = [1000, 2000, 5000, 10000, 20000, 50000]
+
+# number of datasets per n
+trials = 5
+
+# set reproducible random seed
+random.seed(2025)
+np.random.seed(2025)
+
+comps_n_dict = {}
+
+with alive_bar(len(n_values), title="Comparison counting for fixed S...") as bar:
+    for n in n_values:
+        avg_comps = 0
+        for _ in range(trials):
+            dataset = [random.randint(0, 10**9) for _ in range(n)]
+            _, comps = integrate(dataset, S_fixed)
+            avg_comps += comps
+        comps_n_dict[n] = avg_comps / trials
+        bar()
+
+# theoretical comparisons function 
+def theoretical_comparisons_fixedS(n, S):
+    if S >= n:
+        return (n * (n-1) / 4)
+    return n * math.log2(n / S) + (n * (S-1) / 4)
+
+theoretical_results_n = {n: theoretical_comparisons_fixedS(n, S_fixed) for n in n_values}
+
+# plotting empirical vs theoretical results
+plt.plot(list(comps_n_dict.keys()), list(comps_n_dict.values()), label="Empirical", marker="o")
+plt.plot(list(theoretical_results_n.keys()), list(theoretical_results_n.values()),
+         label="Theoretical", linestyle="--", marker="x")
+
+plt.xlabel("Input size n (log scale)")
+plt.ylabel("Number of comparisons")
+plt.xscale("log")
+plt.title(f"Empirical vs Theoretical Comparisons (S={S_fixed})")
+plt.legend()
+plt.grid(True)
+plt.show()
+
 
 
 
