@@ -44,7 +44,7 @@ def insertionsort(lst):
                 j -= 1 
             else: 
                 break 
-            arr[j + 1] = key 
+        arr[j + 1] = key 
     return (arr, comparisons)
 
 #PART A: HYBRID SORT
@@ -179,14 +179,235 @@ plt.grid(True)
 plt.show()
 
 #PART C.3:
-# lst=datasets[100000] #sample list
-# lst1 = datasets[100000].copy()
-# S = 15
-# # test pure insertion sort
-# sorted_hyb, comps_hyb = integrate(lst, S)
-# sorted_mrg, comps_mrg = mergesort(lst1)
-# sorted_ins, comps_ins = insertionsort(lst[:])
 
-# print("Total Number of Key Comparisons")
-# print (f"Pure Insertion Sort: {comps_ins} \nPure Merge Sort: {comps_mrg} \nHybrid Algorithm with S={S}: {comps_hyb}")
-# print(f"Difference in comparisons between Hybrid and Pure Merge Sort: {comps_hyb - comps_mrg}")
+"""Using different sizes of input datasets, study how to determine an optimal value of S 
+for the best performance of this hybrid algorithm (minimizing execution time)."""
+
+import time
+
+# different input sizes to test
+n_values_c3 = [1000, 2000, 5000, 10000, 20000,50000,100000]
+# S values to test for each input size
+S_values_c3 = list(range(1, 101))  # testing S from 1 to 100
+trials_c3 = 5  # number of trials per (n, S) combination
+
+# set seed for reproducibility
+random.seed(2025)
+
+# generate fixed datasets for each input size
+print("generating fixed datasets for consistent results...")
+fixed_datasets = {}
+for n in n_values_c3:
+    datasets = []
+    for trial in range(trials_c3):
+        dataset = [random.randint(0, 10**9) for _ in range(n)]
+        datasets.append(dataset)
+    fixed_datasets[n] = datasets
+    
+
+# dictionary to store optimal S for each input size
+optimal_S_results = {}
+
+print("finding optimal S values for different input sizes (minimizing execution time)...")
+
+with alive_bar(len(n_values_c3), title="finding optimal S...") as bar:
+    for n in n_values_c3:
+        print(f"\ntesting input size n = {n}")
+        
+        # dictionary to store average execution times for each S value
+        avg_times_by_S = {}
+        
+        # test each S value
+        for S in S_values_c3:
+            total_time = 0
+            
+            # run multiple trials for this (n, S) combination
+            for trial in range(trials_c3):
+                #dataset = [random.randint(0, 10**9) for _ in range(n)]
+                dataset = fixed_datasets[n][trial]  # use fixed dataset
+                
+                # measure execution time
+                start_time = time.time()
+                integrate(dataset, S)
+                end_time = time.time()
+                
+                total_time += (end_time - start_time)
+            
+            avg_times_by_S[S] = total_time / trials_c3
+        
+        # find the S value that gives minimum average execution time
+        optimal_S = min(avg_times_by_S, key=avg_times_by_S.get)
+        min_time = avg_times_by_S[optimal_S]
+        
+        optimal_S_results[n] = {
+            'optimal_S': optimal_S,
+            'min_time': min_time,
+            'all_times': avg_times_by_S
+        }
+        
+        print(f"  optimal S = {optimal_S}, min time = {min_time:.4f}s")
+        bar()
+
+# plot: optimal S vs input size
+plt.figure(figsize=(10, 6))
+
+n_list = list(optimal_S_results.keys())
+optimal_S_list = [optimal_S_results[n]['optimal_S'] for n in n_list]
+
+plt.plot(n_list, optimal_S_list, 'bo-', linewidth=3, markersize=10, markerfacecolor='lightblue', 
+         markeredgecolor='darkblue', markeredgewidth=2)
+
+plt.xlabel("Input Size (n)", fontsize=12, fontweight='bold')
+plt.ylabel("Optimal S Value", fontsize=12, fontweight='bold')
+plt.title("Optimal S vs Input Size (Time-based Optimization)", fontsize=14, fontweight='bold', pad=20)
+
+# customize x-axis ticks
+plt.xticks(n_list, [f'{n:,}' for n in n_list], rotation=45, fontsize=10)
+#plt.xscale('log')
+
+# customize y-axis ticks
+plt.yticks(range(0, max(optimal_S_list) + 5, 5), fontsize=10)
+
+# add grid
+plt.grid(True, alpha=0.3, linestyle='--')
+
+# add value labels on points
+for i, (n, s) in enumerate(zip(n_list, optimal_S_list)):
+    plt.annotate(f'S={s}', (n, s), textcoords="offset points", xytext=(0,10), 
+                ha='center', fontsize=9, fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+
+
+# analysis of optimal S values
+print("\n" + "="*60)
+print("ANALYSIS OF OPTIMAL S VALUES (Time-based)")
+print("="*60)
+
+for n in n_list:
+    optimal_S = optimal_S_results[n]['optimal_S']
+    min_time = optimal_S_results[n]['min_time']
+    print(f"n = {n:>8}: optimal S = {optimal_S:>2}, min time = {min_time:.4f}s")
+
+# overall optimal S recommendation
+print(f"\n" + "="*40)
+print("RECOMMENDATION")
+print("="*40)
+
+# find S value with minimum total execution time across all input sizes
+total_times_by_S = {}
+for S in S_values_c3:
+    total_time = 0
+    for n in n_list:
+        if S in optimal_S_results[n]['all_times']:
+            total_time += optimal_S_results[n]['all_times'][S]
+    total_times_by_S[S] = total_time
+
+# find the S with minimum total time
+best_S = min(total_times_by_S, key=total_times_by_S.get)
+best_total_time = total_times_by_S[best_S]
+
+print(f"optimal S values for each n: {[optimal_S_results[n]['optimal_S'] for n in n_list]}")
+print(f"recommended overall S: {best_S}")
+print(f"total execution time for S={best_S}: {best_total_time:.4f}s")
+
+# execution time table
+print(f"\nexecution time table:")
+print(f"S    {n_list[0]}   {n_list[1]}   {n_list[2]}   {n_list[3]}   {n_list[4]}   sum")
+
+# get unique optimal S values
+optimal_S_values = list(set([optimal_S_results[n]['optimal_S'] for n in n_list]))
+optimal_S_values.sort()
+
+for S in optimal_S_values:
+    total_time = 0
+    times = []
+    
+    for n in n_list:
+        if S in optimal_S_results[n]['all_times']:
+            time_val = optimal_S_results[n]['all_times'][S]
+            times.append(f"{time_val:.3f}")
+            total_time += time_val
+        else:
+            times.append("N/A")
+    
+    print(f"{S:2}  {times[0]:>6}  {times[1]:>6}  {times[2]:>6}  {times[3]:>6}  {times[4]:>6}  {total_time:.3f}")
+
+# add recommended S if it's not already in the table
+if best_S not in optimal_S_values:
+    total_time = 0
+    times = []
+    
+    for n in n_list:
+        if best_S in optimal_S_results[n]['all_times']:
+            time_val = optimal_S_results[n]['all_times'][best_S]
+            times.append(f"{time_val:.3f}")
+            total_time += time_val
+        else:
+            times.append("N/A")
+    
+    print(f"{best_S:2}* {times[0]:>6}  {times[1]:>6}  {times[2]:>6}  {times[3]:>6}  {times[4]:>6}  {total_time:.3f}")
+
+
+#PART D: COMPARISON WITH ORIGINAL MERGESORT
+
+"""Implement the original Mergesort algorithm. Compare its performance against the hybrid 
+algorithm (in terms of key comparisons and CPU times) using a dataset of 10 million integers. 
+The optimal S value determined in part (c) should be used for this comparison."""
+
+
+# test dataset size
+test_size = 10000000  # 10 million integers
+print(f"testing with dataset of {test_size:,} integers...")
+
+# generate test dataset
+random.seed(2025)
+test_dataset = [random.randint(0, 10**9) for _ in range(test_size)]
+print(f"generated test dataset of size {len(test_dataset):,}")
+
+# test original mergesort
+print(f"\ntesting original mergesort...")
+start_time = time.time()
+sorted_merge, merge_comps = mergesort(test_dataset)
+merge_time = time.time() - start_time
+
+# test hybrid sort with optimal S
+print(f"testing hybrid sort with optimal S = {best_S}...")
+start_time = time.time()
+sorted_hybrid, hybrid_comps = integrate(test_dataset, best_S)
+hybrid_time = time.time() - start_time
+
+# verify both produce same result
+print(f"verifying both algorithms produce same sorted result...")
+is_same = sorted_merge == sorted_hybrid
+print(f"results match: {is_same}")
+
+# display comparison results
+print(f"\n" + "="*60)
+print("PERFORMANCE COMPARISON")
+print("="*60)
+print(f"{'Algorithm':<15} {'Comparisons':<15} {'Time (s)':<12} {'Speedup':<10}")
+print("-" * 60)
+print(f"{'Original Merge':<15} {merge_comps:<15,} {merge_time:<12.4f} {'1.00x':<10}")
+print(f"{'Hybrid (S=' + str(best_S) + ')':<15} {hybrid_comps:<15,} {hybrid_time:<12.4f} {merge_time/hybrid_time:<10.2f}x")
+
+# calculate improvements
+comp_difference = ((merge_comps - hybrid_comps) / merge_comps) * 100
+time_difference = ((merge_time - hybrid_time) / merge_time) * 100
+
+print(f"\n" + "="*60)
+print("DIFFERENCE ANALYSIS")
+print("="*60)
+print(f"comparison reduction: {comp_difference:.2f}% ({merge_comps:,} → {hybrid_comps:,})")
+print(f"time reduction: {time_difference:.2f}% ({merge_time:.4f}s → {hybrid_time:.4f}s)")
+print(f"speedup factor: {merge_time/hybrid_time:.2f}x faster")
+
+if hybrid_time < merge_time:
+    print(f"\nhybrid sort is {merge_time/hybrid_time:.2f}x faster than original mergesort!")
+else:
+    print(f"\n hybrid sort is {merge_time/hybrid_time:.2f}x slower than original mergesort")
+
+
+
+
